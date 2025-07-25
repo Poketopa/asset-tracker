@@ -1,0 +1,52 @@
+# DB 데이터
+/db_data/
+
+# 환경설정 및 민감 정보
+.env
+.env.*
+asset-tracker-server/.env
+asset-tracker-server/.classpath
+asset-tracker-server/.project
+asset-tracker-server/target/
+
+# Android/Gradle 빌드 및 캐시
+asset-tracker-app/.gradle
+asset-tracker-app/.cxx
+asset-tracker-app/build/
+asset-tracker-app/.idea
+asset-tracker-app/local.properties
+
+# IDE/에디터
+.idea/
+*.iml
+
+# 로그/임시/테스트
+*.log
+*.tmp
+*.temp
+/test-output/
+/test-results/
+
+# OS/툴
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Docker
+/docker-compose.yml
+/docker-compose.override.yml
+**/tmp/
+**/volumes/
+**/.docker/
+*.pid
+
+# 기타
+network_security_config.xml~
+*.swp
+*.swo
+*.keystore
+*.jks
+*.db
+*.db-journal
+*.lock
+*.xml.gz
