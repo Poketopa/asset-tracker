@@ -1,5 +1,7 @@
 package dev.asset_tracker_server.service;
 
+import dev.asset_tracker_server.api.dto.SnapshotHistoryDto;
+import dev.asset_tracker_server.api.dto.SnapshotSummaryDto;
 import dev.asset_tracker_server.api.dto.TickerPriceDto;
 import dev.asset_tracker_server.entity.AssetSnapshot;
 import dev.asset_tracker_server.entity.ExchangeRate;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 import dev.asset_tracker_server.entity.AssetType;
 import dev.asset_tracker_server.entity.User;
@@ -100,5 +103,34 @@ public class AssetSnapshotService {
         } else {
             saveRawSnapshot(dto);
         }
+    }
+
+    public List<SnapshotSummaryDto> getTodaySnapshotsByUser(UUID userId) {
+        User user = User.builder().id(userId).build();
+        LocalDate today = LocalDate.now();
+
+        return assetSnapshotRepository.findByUserAndSnapshotDate(user, today)
+                .stream()
+                .map(snapshot -> new SnapshotSummaryDto(
+                        snapshot.getSymbol(),
+                        snapshot.getAssetType(),
+                        snapshot.getTotalValueUsd(),
+                        snapshot.getTotalValueKrw(),
+                        snapshot.getSnapshotDate()
+                ))
+                .toList();
+    }
+
+    public List<SnapshotHistoryDto> getSnapshotHistoryBySymbol(UUID userId, String symbol) {
+        User user = User.builder().id(userId).build();
+
+        return assetSnapshotRepository.findByUserAndSymbolOrderBySnapshotDateAsc(user, symbol)
+                .stream()
+                .map(snapshot -> new SnapshotHistoryDto(
+                        snapshot.getTotalValueUsd(),
+                        snapshot.getTotalValueKrw(),
+                        snapshot.getSnapshotDate()
+                ))
+                .toList();
     }
 }
