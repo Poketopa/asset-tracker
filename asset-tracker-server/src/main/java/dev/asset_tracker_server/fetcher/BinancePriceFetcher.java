@@ -37,7 +37,7 @@ public class BinancePriceFetcher implements PriceFetcher {
                     "binance",
                     price,
                     "USDT",                 // Binance 기준 통화
-                    Instant.now()
+                    Instant.now().toEpochMilli()
             );
 
         } catch (Exception e) {

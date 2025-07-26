@@ -37,7 +37,7 @@ public class UpbitPriceFetcher implements PriceFetcher {
                     "upbit",                // exchange
                     price,                  // 실시간 가격
                     "KRW",                  // Upbit은 항상 KRW 기준
-                    Instant.now()          // 수집 시점
+                    Instant.now().toEpochMilli()          // 수집 시점
             );
 
         } catch (Exception e) {

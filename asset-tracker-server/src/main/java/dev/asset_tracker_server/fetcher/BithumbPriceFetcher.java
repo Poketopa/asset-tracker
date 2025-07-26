@@ -36,7 +36,7 @@ public class BithumbPriceFetcher implements PriceFetcher {
                     "bithumb",
                     price,
                     "KRW",
-                    Instant.now()
+                    Instant.now().toEpochMilli()
             );
         } catch (Exception e) {
             throw new RuntimeException("Bithumb 가격 조회 실패 (" + symbol + "): " + e.getMessage(), e);

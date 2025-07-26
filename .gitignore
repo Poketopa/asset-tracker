@@ -50,3 +50,4 @@ network_security_config.xml~
 *.db-journal
 *.lock
 *.xml.gz
+asset-tracker-erd.drawio
