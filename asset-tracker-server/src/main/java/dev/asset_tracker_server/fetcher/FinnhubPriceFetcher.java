@@ -39,7 +39,7 @@ public class FinnhubPriceFetcher implements PriceFetcher {
                     "finnhub",
                     price,
                     "USD",
-                    Instant.now() // 또는 Instant.ofEpochSecond(json.get("t").asLong())
+                    Instant.now().toEpochMilli() // 또는 Instant.ofEpochSecond(json.get("t").asLong())
             );
 
         } catch (Exception e) {

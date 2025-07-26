@@ -1,4 +1,4 @@
-package dev.asset_tracker_server;
+package dev.asset_tracker_server.test;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;

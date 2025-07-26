@@ -34,7 +34,7 @@ public class BybitPriceFetcher implements PriceFetcher {
                     "bybit",
                     price,
                     "USDT",
-                    Instant.now()
+                    Instant.now().toEpochMilli()
             );
         } catch (Exception e) {
             throw new RuntimeException("Bybit 가격 조회 실패 (" + symbol + "): " + e.getMessage(), e);

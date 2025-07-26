@@ -33,7 +33,7 @@ public class GateioPriceFetcher implements PriceFetcher {
                     "gateio",
                     price,
                     "USDT",
-                    Instant.now()
+                    Instant.now().toEpochMilli()
             );
         } catch (Exception e) {
             throw new RuntimeException("Gate.io 가격 조회 실패 (" + symbol + "): " + e.getMessage(), e);

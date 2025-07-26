@@ -34,7 +34,7 @@ public class OkxPriceFetcher implements PriceFetcher {
                     "okx",
                     price,
                     "USDT",
-                    Instant.now()
+                    Instant.now().toEpochMilli()
             );
         } catch (Exception e) {
             throw new RuntimeException("OKX 가격 조회 실패 (" + symbol + "): " + e.getMessage(), e);

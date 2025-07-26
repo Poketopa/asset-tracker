@@ -54,6 +54,7 @@ public class SymbolMapping {
     @Column(length = 30)
     private String finnhubCode;
 
+    @Builder.Default
     @Column(name = "is_active", nullable = false)
     private boolean isActive = true;
 }

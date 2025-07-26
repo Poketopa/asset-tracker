@@ -31,4 +31,15 @@ public class ExchangeRate {
 
     @Column(nullable = false)
     private LocalDateTime timestamp;
+
+    @Column(length = 20, nullable = false)
+    private String type; // 예: "USD/KRW" or "USDT/KRW"
+
+    public BigDecimal getRate() {
+        return switch (type) {
+            case "USD/KRW" -> usdToKrw;
+            case "USDT/KRW" -> usdtToKrw;
+            default -> throw new IllegalArgumentException("지원하지 않는 환율 타입: " + type);
+        };
+    }
 }
