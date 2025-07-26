@@ -1,10 +1,13 @@
 package dev.asset_tracker_server.entity;
 
 import jakarta.persistence.*;
+import lombok.Setter;
+
 import java.util.UUID;
 import java.time.LocalDateTime;
 
 @Entity
+@Setter
 @Table(name = "asset_price_history")
 public class AssetPriceHistory {
     @Id
