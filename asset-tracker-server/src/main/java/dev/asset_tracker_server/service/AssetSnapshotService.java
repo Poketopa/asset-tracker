@@ -7,6 +7,7 @@ import dev.asset_tracker_server.entity.AssetSnapshot;
 import dev.asset_tracker_server.entity.ExchangeRate;
 import dev.asset_tracker_server.repository.AssetSnapshotRepository;
 import dev.asset_tracker_server.repository.ExchangeRateRepository;
+import dev.asset_tracker_server.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +27,7 @@ public class AssetSnapshotService {
 
     private final AssetSnapshotRepository assetSnapshotRepository;
     private final ExchangeRateRepository exchangeRateRepository;
+    private final UserRepository userRepository;
 
     // 시스템 계정 UUID (개발용, 실무에서는 별도 계정 관리 권장)
     private static final UUID SYSTEM_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
@@ -132,5 +134,17 @@ public class AssetSnapshotService {
                         snapshot.getSnapshotDate()
                 ))
                 .toList();
+    }
+
+    public List<AssetSnapshot> getSnapshots(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+        return assetSnapshotRepository.findByUserOrderBySnapshotDateAsc(user);
+    }
+
+    public List<AssetSnapshot> getSnapshotsByDate(UUID userId, LocalDate date) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+        return assetSnapshotRepository.findByUserAndSnapshotDate(user, date);
     }
 }

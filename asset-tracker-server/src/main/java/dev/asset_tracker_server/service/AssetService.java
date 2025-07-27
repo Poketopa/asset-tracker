@@ -52,4 +52,36 @@ public class AssetService {
         asset.setUser(user);
         assetRepository.save(asset);
     }
+
+    public void updateAsset(UUID userId, UUID assetId, Asset updatedAsset) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+
+        Asset existing = assetRepository.findById(assetId)
+                .orElseThrow(() -> new IllegalArgumentException("자산 없음"));
+
+        if (!existing.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("해당 자산은 사용자의 소유가 아닙니다");
+        }
+
+        // 필요한 필드만 업데이트 (여기서는 심볼과 수량만 예시로)
+        existing.setSymbol(updatedAsset.getSymbol());
+        existing.setQuantity(updatedAsset.getQuantity());
+        existing.setAssetType(updatedAsset.getAssetType());
+        assetRepository.save(existing);
+    }
+
+    public void deleteAsset(UUID userId, UUID assetId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
+
+        Asset existing = assetRepository.findById(assetId)
+                .orElseThrow(() -> new IllegalArgumentException("자산 없음"));
+
+        if (!existing.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("해당 자산은 사용자의 소유가 아닙니다");
+        }
+
+        assetRepository.delete(existing);
+    }
 }
