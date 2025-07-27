@@ -36,4 +36,15 @@ public interface AssetSnapshotRepository extends JpaRepository<AssetSnapshot, UU
     ORDER BY a.snapshotDate ASC
 """)
     List<DailyAssetReportDto> findDailyReport(@Param("userId") UUID userId, @Param("fromDate") LocalDate fromDate);
+
+    @Query("""
+    SELECT s.snapshotDate AS date,
+           SUM(s.totalValueUsd) AS totalUsd,
+           SUM(s.totalValueKrw) AS totalKrw
+    FROM AssetSnapshot s
+    WHERE s.user = :user
+    GROUP BY s.snapshotDate
+    ORDER BY s.snapshotDate ASC
+""")
+    List<Object[]> findDailyPortfolioHistory(@Param("user") User user);
 }

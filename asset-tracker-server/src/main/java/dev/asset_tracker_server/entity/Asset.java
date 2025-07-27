@@ -32,6 +32,10 @@ public class Asset extends BaseTimeEntity {
     @Column(length = 30, nullable = false)
     private String symbol;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private Exchange exchange;
+
     @Column(precision = 20, scale = 8, nullable = false)
     private BigDecimal quantity;
 
