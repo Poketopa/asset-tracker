@@ -8,8 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Entity
 @Table(name = "user")
 @Getter
@@ -20,8 +18,8 @@ import java.util.UUID;
 public class User extends BaseTimeEntity {
 
     @Id
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(length = 50, nullable = false, unique = true)
     private String loginId;

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,15 +20,15 @@ public class AssetPortfolioController {
 
     private final AssetPortfolioService assetPortfolioService;
 
-    @GetMapping("/{userId}/total")
-    public ResponseEntity<Map<String, BigDecimal>> getTotalValue(@PathVariable UUID userId) {
-        Map<String, BigDecimal> total = assetPortfolioService.calculatePortfolioValue(userId);
-        return ResponseEntity.ok(total);
+    @GetMapping("/{userId}/total-value")
+    public ResponseEntity<Map<String, BigDecimal>> getTotalValue(@PathVariable Long userId) {
+        Map<String, BigDecimal> totalValue = assetPortfolioService.calculatePortfolioValue(userId);
+        return ResponseEntity.ok(totalValue);
     }
 
-    @GetMapping("/{userId}/evaluate")
-    public ResponseEntity<List<AssetEvaluationDto>> getEvaluationDetails(@PathVariable UUID userId) {
-        List<AssetEvaluationDto> details = assetPortfolioService.evaluatePortfolio(userId);
-        return ResponseEntity.ok(details);
+    @GetMapping("/{userId}/evaluation")
+    public ResponseEntity<List<AssetEvaluationDto>> getEvaluationDetails(@PathVariable Long userId) {
+        List<AssetEvaluationDto> evaluations = assetPortfolioService.evaluatePortfolio(userId);
+        return ResponseEntity.ok(evaluations);
     }
 }

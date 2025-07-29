@@ -11,10 +11,9 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface AssetSnapshotRepository extends JpaRepository<AssetSnapshot, UUID> {
+public interface AssetSnapshotRepository extends JpaRepository<AssetSnapshot, Long> {
 
     List<AssetSnapshot> findByUserAndSnapshotDate(User user, LocalDate snapshotDate);
 
@@ -22,20 +21,22 @@ public interface AssetSnapshotRepository extends JpaRepository<AssetSnapshot, UU
 
     List<AssetSnapshot> findByUserAndSymbolOrderBySnapshotDateAsc(User user, String symbol);
 
+    List<AssetSnapshot> findByUserAndSymbolOrderBySnapshotDateDesc(User user, String symbol);
+
+    List<AssetSnapshot> findByUser(User user);
+
     Optional<AssetSnapshot> findByUserAndSymbolAndSnapshotDate(User user, String symbol, LocalDate snapshotDate);
 
-    @Query("""
-    SELECT new dev.asset_tracker_server.api.dto.DailyAssetReportDto(
-        a.snapshotDate,
-        SUM(a.totalValueKrw),
-        SUM(a.totalValueUsd)
-    )
-    FROM AssetSnapshot a
-    WHERE a.user.id = :userId AND a.snapshotDate >= :fromDate
-    GROUP BY a.snapshotDate
-    ORDER BY a.snapshotDate ASC
-""")
-    List<DailyAssetReportDto> findDailyReport(@Param("userId") UUID userId, @Param("fromDate") LocalDate fromDate);
+    @Query("SELECT new dev.asset_tracker_server.api.dto.DailyAssetReportDto(" +
+            "s.snapshotDate, " +
+            "SUM(s.totalValueKrw), " +
+            "SUM(s.totalValueUsd)) " +
+            "FROM AssetSnapshot s " +
+            "WHERE s.user.id = :userId " +
+            "AND s.snapshotDate >= :fromDate " +
+            "GROUP BY s.snapshotDate " +
+            "ORDER BY s.snapshotDate")
+    List<DailyAssetReportDto> findDailyReport(@Param("userId") Long userId, @Param("fromDate") LocalDate fromDate);
 
     @Query("""
     SELECT s.snapshotDate AS date,

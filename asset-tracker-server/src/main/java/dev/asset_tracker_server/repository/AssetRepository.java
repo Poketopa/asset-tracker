@@ -6,15 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface AssetRepository extends JpaRepository<Asset, UUID> {
+public interface AssetRepository extends JpaRepository<Asset, Long> {
 
     List<Asset> findByUser(User user);
-
-    Optional<Asset> findByUserAndSymbol(User user, String symbol);
-
-    boolean existsByUserAndSymbol(User user, String symbol);
 }

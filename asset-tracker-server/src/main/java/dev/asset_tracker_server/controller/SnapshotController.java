@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/snapshot")
@@ -20,13 +19,13 @@ public class SnapshotController {
     private final AssetSnapshotService assetSnapshotService;
 
     @GetMapping("/{userId}/latest")
-    public List<SnapshotSummaryDto> getLatestSnapshots(@PathVariable UUID userId) {
+    public List<SnapshotSummaryDto> getLatestSnapshots(@PathVariable Long userId) {
         return assetSnapshotService.getTodaySnapshotsByUser(userId);
     }
 
-    @GetMapping("/{userId}/{symbol}/history")
-    public List<SnapshotHistoryDto> getHistory(
-            @PathVariable UUID userId,
+    @GetMapping("/{userId}/history/{symbol}")
+    public List<SnapshotHistoryDto> getSnapshotHistory(
+            @PathVariable Long userId,
             @PathVariable String symbol
     ) {
         return assetSnapshotService.getSnapshotHistoryBySymbol(userId, symbol);

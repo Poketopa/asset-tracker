@@ -5,7 +5,7 @@ import java.time.Instant;
 
 public record TickerPriceDto(
         String symbol,
-        String assetType,
+        String exchange,
         BigDecimal price,
         String currency,
         long timestamp

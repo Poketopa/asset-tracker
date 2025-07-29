@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,13 +23,13 @@ public class AssetController {
     private final AssetService assetService;
 
     @GetMapping("/{userId}")
-    public List<AssetService.AssetDto> getAssets(@PathVariable UUID userId) {
+    public List<AssetService.AssetDto> getAssets(@PathVariable Long userId) {
         return assetService.getAssetsByUser(userId);
     }
 
     @PostMapping("/{userId}")
     public ResponseEntity<?> registerAsset(
-            @PathVariable UUID userId,
+            @PathVariable Long userId,
             @RequestBody Asset asset
     ) {
         assetService.saveAsset(userId, asset);
@@ -39,8 +38,8 @@ public class AssetController {
 
     @PutMapping("/{userId}/{assetId}")
     public ResponseEntity<?> updateAsset(
-            @PathVariable UUID userId,
-            @PathVariable UUID assetId,
+            @PathVariable Long userId,
+            @PathVariable Long assetId,
             @RequestBody Asset updatedAsset
     ) {
         assetService.updateAsset(userId, assetId, updatedAsset);
@@ -49,8 +48,8 @@ public class AssetController {
 
     @DeleteMapping("/{userId}/{assetId}")
     public ResponseEntity<?> deleteAsset(
-            @PathVariable UUID userId,
-            @PathVariable UUID assetId
+            @PathVariable Long userId,
+            @PathVariable Long assetId
     ) {
         assetService.deleteAsset(userId, assetId);
         return ResponseEntity.ok("자산 삭제 완료");

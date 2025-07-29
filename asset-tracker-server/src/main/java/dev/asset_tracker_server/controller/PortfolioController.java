@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/portfolio")
@@ -20,12 +19,12 @@ public class PortfolioController {
     private final AssetPortfolioService assetPortfolioService;
 
     @GetMapping("/{userId}/summary")
-    public PortfolioSummaryDto getSummary(@PathVariable UUID userId) {
+    public PortfolioSummaryDto getSummary(@PathVariable Long userId) {
         return assetPortfolioService.getPortfolioSummary(userId);
     }
 
     @GetMapping("/{userId}/history")
-    public List<PortfolioHistoryDto> getHistory(@PathVariable UUID userId) {
+    public List<PortfolioHistoryDto> getHistory(@PathVariable Long userId) {
         return assetPortfolioService.getPortfolioHistory(userId);
     }
 }
