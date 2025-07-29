@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -22,22 +21,17 @@ public class AssetChartService {
     private final AssetSnapshotRepository assetSnapshotRepository;
     private final UserRepository userRepository;
 
-    public List<SnapshotChartDto> getDailySnapshots(UUID userId, String currency) {
+    public List<SnapshotChartDto> getDailySnapshots(Long userId, String currency) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
 
         List<AssetSnapshot> snapshots = assetSnapshotRepository.findByUserOrderBySnapshotDateAsc(user);
 
-        // 날짜별로 그룹핑해서 합산
-        Map<LocalDate, BigDecimal> grouped = new TreeMap<>();
-
-        for (AssetSnapshot s : snapshots) {
-            BigDecimal value = "KRW".equalsIgnoreCase(currency) ? s.getTotalValueKrw() : s.getTotalValueUsd();
-            grouped.merge(s.getSnapshotDate(), value, BigDecimal::add);
-        }
-
-        return grouped.entrySet().stream()
-                .map(e -> new SnapshotChartDto(e.getKey(), e.getValue()))
+        return snapshots.stream()
+                .map(snapshot -> new SnapshotChartDto(
+                        snapshot.getSnapshotDate(),
+                        currency.equals("USD") ? snapshot.getTotalValueUsd() : snapshot.getTotalValueKrw()
+                ))
                 .toList();
     }
 }

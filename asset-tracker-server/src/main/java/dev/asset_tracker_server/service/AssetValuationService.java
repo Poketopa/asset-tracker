@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -31,40 +30,24 @@ public class AssetValuationService {
     private final ExchangeRateRepository exchangeRateRepository;
     private final PriceFetchManager priceFetchManager;
 
-    public PortfolioValuationDto getPortfolioSummary(UUID userId) {
+    public PortfolioValuationDto getPortfolioSummary(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
-
+                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
         List<Asset> assets = assetRepository.findByUser(user);
-        BigDecimal totalUsd = BigDecimal.ZERO;
-        BigDecimal totalKrw = BigDecimal.ZERO;
+
+        BigDecimal totalValueUsd = BigDecimal.ZERO;
+        BigDecimal totalValueKrw = BigDecimal.ZERO;
 
         for (Asset asset : assets) {
-            SymbolMapping mapping = symbolMappingRepository.findById(asset.getSymbol())
-                    .orElseThrow(() -> new IllegalArgumentException("심볼 매핑이 없습니다: " + asset.getSymbol()));
-
-            TickerPriceDto dto = priceFetchManager.fetch(mapping.getExchange().name(), mapping.getExchangeSymbol());
-            BigDecimal quantity = asset.getQuantity();
-            BigDecimal pricePerUnit = dto.price();
-            BigDecimal valueUsd = pricePerUnit.multiply(quantity);
-
-            BigDecimal rate = switch (dto.currency()) {
-                case "USDT" -> exchangeRateRepository.findLatestByType("USDT/KRW", PageRequest.of(0, 1)).get(0).getRate();
-                case "USD" -> exchangeRateRepository.findLatestByType("USD/KRW", PageRequest.of(0, 1)).get(0).getRate();
-                default -> BigDecimal.ONE;
-            };
-
-            BigDecimal valueKrw = valueUsd.multiply(rate);
-
-            totalUsd = totalUsd.add(valueUsd);
-            totalKrw = totalKrw.add(valueKrw);
+            // 실제 가격 조회 및 계산 로직 필요
+            totalValueUsd = totalValueUsd.add(asset.getQuantity());
+            totalValueKrw = totalValueKrw.add(asset.getQuantity());
         }
 
         return PortfolioValuationDto.builder()
                 .userId(userId)
-                .totalValueUsd(totalUsd)
-                .totalValueKrw(totalKrw)
-                .asOf(Instant.now())
+                .totalValueUsd(totalValueUsd)
+                .totalValueKrw(totalValueKrw)
                 .build();
     }
 }

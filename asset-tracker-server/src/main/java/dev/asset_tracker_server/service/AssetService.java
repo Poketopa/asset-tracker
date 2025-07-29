@@ -1,6 +1,7 @@
 package dev.asset_tracker_server.service;
 
 import dev.asset_tracker_server.entity.Asset;
+import dev.asset_tracker_server.entity.AssetType;
 import dev.asset_tracker_server.entity.User;
 import dev.asset_tracker_server.repository.AssetRepository;
 import dev.asset_tracker_server.repository.UserRepository;
@@ -9,8 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
-import dev.asset_tracker_server.entity.AssetType;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +20,7 @@ public class AssetService {
 
     public static record AssetDto(String symbol, BigDecimal quantity, AssetType assetType, boolean isKimchi) {}
 
-    public List<AssetDto> getAssetsByUser(UUID userId) {
+    public List<AssetDto> getAssetsByUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
 
@@ -30,7 +29,7 @@ public class AssetService {
                 .toList();
     }
 
-    public void saveAsset(UUID userId, Asset asset) {
+    public void saveAsset(Long userId, Asset asset) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
 
@@ -53,7 +52,7 @@ public class AssetService {
         assetRepository.save(asset);
     }
 
-    public void updateAsset(UUID userId, UUID assetId, Asset updatedAsset) {
+    public void updateAsset(Long userId, Long assetId, Asset updatedAsset) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
 
@@ -71,7 +70,7 @@ public class AssetService {
         assetRepository.save(existing);
     }
 
-    public void deleteAsset(UUID userId, UUID assetId) {
+    public void deleteAsset(Long userId, Long assetId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
 

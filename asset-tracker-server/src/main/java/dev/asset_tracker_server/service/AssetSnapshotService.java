@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 import dev.asset_tracker_server.entity.AssetType;
 import dev.asset_tracker_server.entity.User;
 
@@ -29,14 +28,27 @@ public class AssetSnapshotService {
     private final ExchangeRateRepository exchangeRateRepository;
     private final UserRepository userRepository;
 
-    // 시스템 계정 UUID (개발용, 실무에서는 별도 계정 관리 권장)
-    private static final UUID SYSTEM_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+    // 시스템 계정 ID (개발용, 실무에서는 별도 계정 관리 권장)
+    private static final Long SYSTEM_USER_ID = 1L;
+
+    /**
+     * 심볼을 기반으로 AssetType을 추론하는 메서드
+     */
+    private AssetType inferAssetType(String symbol) {
+        if (symbol.endsWith("USDT") || symbol.endsWith("BTC") || symbol.endsWith("ETH")) {
+            return AssetType.CRYPTO;
+        } else if (symbol.matches("[A-Z]{1,5}")) { // 주식 심볼 패턴 (1-5자리 대문자)
+            return AssetType.STOCK;
+        } else {
+            return AssetType.CRYPTO; // 기본값
+        }
+    }
 
     public void saveRawSnapshot(TickerPriceDto dto) {
         AssetSnapshot snapshot = AssetSnapshot.builder()
                 .user(User.builder().id(SYSTEM_USER_ID).build())
                 .symbol(dto.symbol())
-                .assetType(AssetType.valueOf(dto.assetType()))
+                .assetType(inferAssetType(dto.symbol()))
                 .totalValueUsd(dto.price())
                 .totalValueKrw(null)  // 환산 없음
                 .snapshotDate(LocalDate.now())
@@ -60,7 +72,7 @@ public class AssetSnapshotService {
         AssetSnapshot snapshot = AssetSnapshot.builder()
                 .user(User.builder().id(SYSTEM_USER_ID).build())
                 .symbol(dto.symbol())
-                .assetType(AssetType.valueOf(dto.assetType()))
+                .assetType(inferAssetType(dto.symbol()))
                 .totalValueUsd(priceUsd)
                 .totalValueKrw(priceKrw)
                 .snapshotDate(LocalDate.now())
@@ -87,7 +99,7 @@ public class AssetSnapshotService {
         AssetSnapshot snapshot = AssetSnapshot.builder()
                 .user(User.builder().id(SYSTEM_USER_ID).build())
                 .symbol(dto.symbol())
-                .assetType(AssetType.valueOf(dto.assetType()))
+                .assetType(inferAssetType(dto.symbol()))
                 .totalValueUsd(dto.price())
                 .totalValueKrw(priceKrw)
                 .snapshotDate(LocalDate.now())
@@ -107,12 +119,14 @@ public class AssetSnapshotService {
         }
     }
 
-    public List<SnapshotSummaryDto> getTodaySnapshotsByUser(UUID userId) {
-        User user = User.builder().id(userId).build();
-        LocalDate today = LocalDate.now();
+    public List<SnapshotSummaryDto> getTodaySnapshotsByUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
 
-        return assetSnapshotRepository.findByUserAndSnapshotDate(user, today)
-                .stream()
+        LocalDate today = LocalDate.now();
+        List<AssetSnapshot> snapshots = assetSnapshotRepository.findByUserAndSnapshotDate(user, today);
+
+        return snapshots.stream()
                 .map(snapshot -> new SnapshotSummaryDto(
                         snapshot.getSymbol(),
                         snapshot.getAssetType(),
@@ -123,11 +137,13 @@ public class AssetSnapshotService {
                 .toList();
     }
 
-    public List<SnapshotHistoryDto> getSnapshotHistoryBySymbol(UUID userId, String symbol) {
-        User user = User.builder().id(userId).build();
+    public List<SnapshotHistoryDto> getSnapshotHistoryBySymbol(Long userId, String symbol) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
 
-        return assetSnapshotRepository.findByUserAndSymbolOrderBySnapshotDateAsc(user, symbol)
-                .stream()
+        List<AssetSnapshot> snapshots = assetSnapshotRepository.findByUserAndSymbolOrderBySnapshotDateDesc(user, symbol);
+
+        return snapshots.stream()
                 .map(snapshot -> new SnapshotHistoryDto(
                         snapshot.getTotalValueUsd(),
                         snapshot.getTotalValueKrw(),
@@ -136,13 +152,13 @@ public class AssetSnapshotService {
                 .toList();
     }
 
-    public List<AssetSnapshot> getSnapshots(UUID userId) {
+    public List<AssetSnapshot> getSnapshots(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
-        return assetSnapshotRepository.findByUserOrderBySnapshotDateAsc(user);
+        return assetSnapshotRepository.findByUser(user);
     }
 
-    public List<AssetSnapshot> getSnapshotsByDate(UUID userId, LocalDate date) {
+    public List<AssetSnapshot> getSnapshotsByDate(Long userId, LocalDate date) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
         return assetSnapshotRepository.findByUserAndSnapshotDate(user, date);

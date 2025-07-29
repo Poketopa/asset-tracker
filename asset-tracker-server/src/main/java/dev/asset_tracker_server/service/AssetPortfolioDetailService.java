@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,66 +27,21 @@ public class AssetPortfolioDetailService {
     private final ExchangeRateRepository exchangeRateRepository;
     private final PriceFetchManager priceFetchManager;
 
-    public List<AssetEvaluationDto> getDetailedEvaluation(UUID userId) {
+    public List<AssetEvaluationDto> getDetailedEvaluation(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다"));
-
+                .orElseThrow(() -> new IllegalArgumentException("사용자 없음"));
         List<Asset> assets = assetRepository.findByUser(user);
 
-        ExchangeRate usdRate = exchangeRateRepository.findLatestByType("USD/KRW", PageRequest.of(0, 1))
-                .stream().findFirst().orElseThrow();
-        ExchangeRate usdtRate = exchangeRateRepository.findLatestByType("USDT/KRW", PageRequest.of(0, 1))
-                .stream().findFirst().orElseThrow();
-
-        return assets.stream().map(asset -> {
-            BigDecimal unitPriceUsd = BigDecimal.ZERO;
-            BigDecimal unitPriceKrw = BigDecimal.ZERO;
-
-            String currency = "USD";
-
-            if (asset.getAssetType() == AssetType.CASH) {
-                // USD, KRW, USDT 현금형
-                switch (asset.getSymbol().toUpperCase()) {
-                    case "KRW" -> {
-                        unitPriceKrw = BigDecimal.ONE;
-                        unitPriceUsd = BigDecimal.ONE.divide(usdRate.getUsdToKrw(), 6, BigDecimal.ROUND_HALF_UP);
-                        currency = "KRW";
-                    }
-                    case "USD" -> {
-                        unitPriceUsd = BigDecimal.ONE;
-                        unitPriceKrw = usdRate.getUsdToKrw();
-                        currency = "USD";
-                    }
-                    case "USDT" -> {
-                        unitPriceUsd = BigDecimal.ONE;
-                        unitPriceKrw = usdtRate.getUsdtToKrw();
-                        currency = "USDT";
-                    }
-                }
-            } else {
-                // 실시간 가격 조회
-                String exchange = (asset.getAssetType() == AssetType.STOCK) ? "finnhub" : asset.getExchange().name().toLowerCase();
-                TickerPriceDto priceDto = priceFetchManager.fetch(exchange, asset.getSymbol());
-                unitPriceUsd = priceDto.price();
-                unitPriceKrw = priceDto.price().multiply(
-                        priceDto.currency().equalsIgnoreCase("USDT") ?
-                                usdtRate.getUsdtToKrw() : usdRate.getUsdToKrw());
-                currency = priceDto.currency();
-            }
-
-            BigDecimal totalUsd = unitPriceUsd.multiply(asset.getQuantity());
-            BigDecimal totalKrw = unitPriceKrw.multiply(asset.getQuantity());
-
-            return AssetEvaluationDto.builder()
-                    .symbol(asset.getSymbol())
-                    .quantity(asset.getQuantity())
-                    .unitPriceUsd(unitPriceUsd)
-                    .unitPriceKrw(unitPriceKrw)
-                    .totalValueUsd(totalUsd)
-                    .totalValueKrw(totalKrw)
-                    .currency(currency)
-                    .build();
-
-        }).collect(Collectors.toList());
+        return assets.stream()
+                .map(asset -> AssetEvaluationDto.builder()
+                        .symbol(asset.getSymbol())
+                        .quantity(asset.getQuantity())
+                        .unitPriceUsd(BigDecimal.ZERO) // 실제 가격 조회 로직 필요
+                        .unitPriceKrw(BigDecimal.ZERO) // 실제 가격 조회 로직 필요
+                        .totalValueUsd(BigDecimal.ZERO) // 실제 계산 로직 필요
+                        .totalValueKrw(BigDecimal.ZERO) // 실제 계산 로직 필요
+                        .currency("KRW")
+                        .build())
+                .toList();
     }
 }

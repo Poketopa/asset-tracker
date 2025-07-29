@@ -1,18 +1,23 @@
 package dev.asset_tracker_server.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
 import java.time.LocalDateTime;
 
 @Entity
 @Setter
 @Table(name = "asset_price_history")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AssetPriceHistory {
     @Id
-    @Column(columnDefinition = "UUID")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(length = 50, nullable = false)
     private String symbol;

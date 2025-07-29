@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "exchange_rate")
@@ -20,8 +19,8 @@ import java.util.UUID;
 public class ExchangeRate {
 
     @Id
-    @Column(columnDefinition = "BINARY(16)")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(precision = 20, scale = 8, nullable = false)
     private BigDecimal usdToKrw;

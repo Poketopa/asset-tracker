@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,12 +19,11 @@ public class AssetChartController {
 
     private final AssetChartService assetChartService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<SnapshotChartDto>> getChartData(
-            @PathVariable UUID userId,
+    @GetMapping("/{userId}/daily")
+    public List<SnapshotChartDto> getDailySnapshots(
+            @PathVariable Long userId,
             @RequestParam(defaultValue = "KRW") String currency
     ) {
-        List<SnapshotChartDto> chartData = assetChartService.getDailySnapshots(userId, currency);
-        return ResponseEntity.ok(chartData);
+        return assetChartService.getDailySnapshots(userId, currency);
     }
 }

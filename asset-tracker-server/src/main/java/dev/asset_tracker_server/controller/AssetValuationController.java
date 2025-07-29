@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/valuation")
@@ -18,7 +16,7 @@ public class AssetValuationController {
     private final AssetValuationService assetValuationService;
 
     @GetMapping("/{userId}")
-    public PortfolioValuationDto getValuation(@PathVariable UUID userId) {
+    public PortfolioValuationDto getValuation(@PathVariable Long userId) {
         return assetValuationService.getPortfolioSummary(userId);
     }
 }
